@@ -1,10 +1,10 @@
-# 🛒 FirstClub Membership Program — Backend System
+# ðŸ›’ FirstClub Membership Program â€” Backend System
 
 > A production-grade membership subscription service with tiered benefits, configurable criteria, and concurrency-safe operations built with Java 17 + Spring Boot 3.2.
 
 ---
 
-## 📋 Table of Contents
+## ðŸ“‹ Table of Contents
 
 - [Problem Statement](#-problem-statement)
 - [Tech Stack](#-tech-stack)
@@ -12,16 +12,15 @@
 - [Entity Design & Rationale](#-entity-design--rationale)
 - [Design Patterns Used](#-design-patterns-used)
 - [Concurrency Handling](#-concurrency-handling)
-- [Multi-Instance / Distributed System Fixes](#-multi-instance--distributed-system-fixes)
 - [API Reference](#-api-reference)
-- [Request Flow — End to End](#-request-flow--end-to-end)
+- [Request Flow â€” End to End](#-request-flow--end-to-end)
 - [Extensibility Guide](#-extensibility-guide)
 - [Running the Project](#-running-the-project)
 - [Demo Walkthrough](#-demo-walkthrough)
 
 ---
 
-## 🎯 Problem Statement
+## ðŸŽ¯ Problem Statement
 
 Design a backend system for a **Membership Program** for FirstClub that supports:
 
@@ -34,7 +33,7 @@ Design a backend system for a **Membership Program** for FirstClub that supports
 
 ---
 
-## 🛠 Tech Stack
+## ðŸ›  Tech Stack
 
 | Technology | Version | Why |
 |-----------|---------|-----|
@@ -49,56 +48,56 @@ Design a backend system for a **Membership Program** for FirstClub that supports
 
 ---
 
-## 🏗 Architecture Overview
+## ðŸ— Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Client / API Consumer                 │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ HTTP Request
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   MembershipController                       │
-│        (REST layer — validates input, routes to service)     │
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-          ┌───────────────┴────────────────┐
-          ▼                                ▼
-┌──────────────────┐            ┌──────────────────────┐
-│ MembershipService│            │ TierEvaluationService│
-│ (business logic) │            │ (strategy evaluation)│
-└────────┬─────────┘            └──────────┬───────────┘
-         │                                 │
-         │                    ┌────────────┴──────────────┐
-         │                    │  TierCriteriaStrategyFactory│
-         │                    │  ┌──────────────────────┐  │
-         │                    │  │OrderCountStrategy    │  │
-         │                    │  │OrderValueStrategy    │  │
-         │                    │  │CohortStrategy        │  │
-         │                    │  └──────────────────────┘  │
-         │                    └───────────────────────────┘
-         │
-┌────────┴──────────────────────────────────────────┐
-│                  Repository Layer                  │
-│  MembershipPlanRepo  │  MembershipTierRepo        │
-│  UserMembershipRepo  │  MembershipAuditLogRepo    │
-└────────┬──────────────────────────────────────────┘
-         │
-┌────────┴──────────────────────────────────────────┐
-│               H2 / PostgreSQL Database             │
-│  membership_plans  │  membership_tiers            │
-│  tier_benefits     │  tier_criteria               │
-│  user_memberships  │  membership_audit_logs       │
-└───────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                        Client / API Consumer                 â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                          â”‚ HTTP Request
+                          â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                   MembershipController                       â”‚
+â”‚        (REST layer â€” validates input, routes to service)     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                          â”‚
+          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+          â–¼                                â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”            â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ MembershipServiceâ”‚            â”‚ TierEvaluationServiceâ”‚
+â”‚ (business logic) â”‚            â”‚ (strategy evaluation)â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜            â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â”‚                                 â”‚
+         â”‚                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+         â”‚                    â”‚  TierCriteriaStrategyFactoryâ”‚
+         â”‚                    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+         â”‚                    â”‚  â”‚OrderCountStrategy    â”‚  â”‚
+         â”‚                    â”‚  â”‚OrderValueStrategy    â”‚  â”‚
+         â”‚                    â”‚  â”‚CohortStrategy        â”‚  â”‚
+         â”‚                    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+         â”‚                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                  Repository Layer                  â”‚
+â”‚  MembershipPlanRepo  â”‚  MembershipTierRepo        â”‚
+â”‚  UserMembershipRepo  â”‚  MembershipAuditLogRepo    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚               H2 / PostgreSQL Database             â”‚
+â”‚  membership_plans  â”‚  membership_tiers            â”‚
+â”‚  tier_benefits     â”‚  tier_criteria               â”‚
+â”‚  user_memberships  â”‚  membership_audit_logs       â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
 
-## 📐 Entity Design & Rationale
+## ðŸ“ Entity Design & Rationale
 
-### Why these 6 entities?
+### Why these 7 entities?
 
-The core design decision was to **separate concerns at the data level**. Benefits and criteria are NOT hardcoded — they are stored as entities so they can be changed without a code deployment.
+The core design decision was to **separate concerns at the data level**. Benefits and criteria are NOT hardcoded â€” they are stored as entities so they can be changed without a code deployment.
 
 ---
 
@@ -107,9 +106,9 @@ The core design decision was to **separate concerns at the data level**. Benefit
 id | planType (MONTHLY/QUARTERLY/YEARLY) | name | price | durationDays | description | active
 ```
 
-**Why:** Plans define the *billing cycle and price*. They are intentionally decoupled from tiers — a user can be on a MONTHLY plan with a PLATINUM tier. Plan controls *when* you pay; Tier controls *what* you get.
+**Why:** Plans define the *billing cycle and price*. They are intentionally decoupled from tiers â€” a user can be on a MONTHLY plan with a PLATINUM tier. Plan controls *when* you pay; Tier controls *what* you get.
 
-**Decision:** `planType` is `UNIQUE` in DB — prevents accidental duplicate plans.
+**Decision:** `planType` is `UNIQUE` in DB â€” prevents accidental duplicate plans.
 
 ---
 
@@ -121,8 +120,8 @@ id | tierLevel (SILVER/GOLD/PLATINUM) | name | description | tierOrder | active
 **Why:** `tierOrder` (1, 2, 3) is the key field that enables upgrade/downgrade validation without string comparisons. The `TierLevel` enum exposes `isHigherThan()` and `isLowerThan()` methods that use `tierOrder` internally.
 
 **Decision:** Tier and Plan are separate entities. This allows future scenarios like:
-- *"Only YEARLY plan users can access PLATINUM tier"* — add a `planEligibility` field to `MembershipTier`
-- *"Free tier with no plan"* — just create a MONTHLY plan with price=0
+- *"Only YEARLY plan users can access PLATINUM tier"* â€” add a `planEligibility` field to `MembershipTier`
+- *"Free tier with no plan"* â€” just create a MONTHLY plan with price=0
 
 ---
 
@@ -131,16 +130,16 @@ id | tierLevel (SILVER/GOLD/PLATINUM) | name | description | tierOrder | active
 id | tier_id (FK) | benefitType (enum) | benefitValue (String) | description
 ```
 
-**Why:** Benefits are stored as key-value pairs per tier. This means the product team can change *"Gold tier gives 10% discount"* to *"12% discount"* by updating a DB row — **no code change, no redeployment**.
+**Why:** Benefits are stored as key-value pairs per tier. This means the product team can change *"Gold tier gives 10% discount"* to *"12% discount"* by updating a DB row â€” **no code change, no redeployment**.
 
 **Decision:** `benefitValue` is a `String` intentionally. Different benefit types have different value types:
-- `FREE_DELIVERY` → `"true"` / `"false"`
-- `DISCOUNT_PERCENT` → `"10"`
-- `FASTER_DELIVERY_HOURS` → `"24"`
+- `FREE_DELIVERY` â†’ `"true"` / `"false"`
+- `DISCOUNT_PERCENT` â†’ `"10"`
+- `FASTER_DELIVERY_HOURS` â†’ `"24"`
 
 The consumer (frontend/downstream service) parses the value based on `benefitType` context. This trades type-safety for maximum flexibility.
 
-**Constraint:** `UNIQUE(tier_id, benefit_type)` — a tier cannot have duplicate benefit types.
+**Constraint:** `UNIQUE(tier_id, benefit_type)` â€” a tier cannot have duplicate benefit types.
 
 ---
 
@@ -150,10 +149,10 @@ id | tier_id (FK) | criteriaType (ORDER_COUNT/ORDER_VALUE/COHORT) | threshold | 
 ```
 
 **Why:** Eligibility rules for automatic tier promotion are stored in the DB. This means:
-- *"Raise GOLD threshold from 5 orders to 10 orders"* → `UPDATE tier_criteria SET threshold=10 WHERE ...`
+- *"Raise GOLD threshold from 5 orders to 10 orders"* â†’ `UPDATE tier_criteria SET threshold=10 WHERE ...`
 - No code change needed.
 
-**Decision:** Multiple criteria per tier use **OR semantics** — satisfying ANY ONE criteria qualifies the user. This is more practical than AND semantics for retail use cases (a high-value customer who placed 2 large orders should get Gold, even without hitting 5 orders).
+**Decision:** Multiple criteria per tier use **OR semantics** â€” satisfying ANY ONE criteria qualifies the user. This is more practical than AND semantics for retail use cases (a high-value customer who placed 2 large orders should get Gold, even without hitting 5 orders).
 
 **Decision:** `threshold` and `cohortValue` are separate nullable fields. `ORDER_COUNT`/`ORDER_VALUE` use `threshold`; `COHORT` uses `cohortValue`. This avoids a generic `value: String` field that would be harder to query and validate.
 
@@ -164,11 +163,28 @@ id | tier_id (FK) | criteriaType (ORDER_COUNT/ORDER_VALUE/COHORT) | threshold | 
 id | userId | plan_id (FK) | tier_id (FK) | status | startDate | endDate | autoRenew | version | createdAt | updatedAt
 ```
 
-**Why `@Version` field:** This is the **optimistic locking** key. Every time a `UserMembership` row is updated, Hibernate increments `version`. If two threads try to update the same row simultaneously, the second one gets an `OptimisticLockException` — preventing silent data corruption.
+**Why `@Version` field:** This is the **optimistic locking** key. Every time a `UserMembership` row is updated, Hibernate increments `version`. If two threads try to update the same row simultaneously, the second one gets an `OptimisticLockException` â€” preventing silent data corruption.
 
 **Why `userId` is a String (not FK to a User table):** This service is designed as a **microservice**. It doesn't own the User domain. `userId` is an external identifier from the User Service. This keeps the Membership Service independently deployable and testable.
 
-**Decision — `startDate`/`endDate` are `LocalDate` not `LocalDateTime`:** Membership validity is day-granular, not minute-granular. Using `LocalDate` avoids timezone issues.
+**Decision â€” `startDate`/`endDate` are `LocalDate` not `LocalDateTime`:** Membership validity is day-granular, not minute-granular. Using `LocalDate` avoids timezone issues.
+
+**Decision â€” Composite Indexes:** Strategic composite indexes are used instead of low-cardinality standalone indexes:
+- `(userId, status)` — covers the primary query `WHERE user_id = ? AND status = 'ACTIVE'` in a single index scan
+- `(status, endDate)` — covers the scheduler query `WHERE status = 'ACTIVE' AND end_date < today`
+
+A standalone index on `status` (only 4 possible values) would be nearly useless — the query optimizer would ignore it and perform a full table scan.
+
+---
+
+### `ActiveUserMembership`
+```
+id (user_id PK) | membershipId
+```
+
+**Why:** Pessimistic locks (`SELECT ... FOR UPDATE`) can only lock **existing rows**. When a user subscribes for the first time, there is no row to lock — two concurrent subscribe requests across instances can both pass the duplicate check and create two ACTIVE memberships. This shadow table solves it: on subscribe, we `INSERT INTO active_user_memberships(user_id)`. The primary key constraint on `user_id` ensures only one concurrent request succeeds; the second gets a `DataIntegrityViolationException` (mapped to HTTP 409 Conflict). On cancel/expire, the row is deleted.
+
+**Decision:** This is paired with a partial unique index (`CREATE UNIQUE INDEX ... ON user_memberships(user_id) WHERE status = 'ACTIVE'`) created via `data.sql` (since JPA's `@Index` doesn't support `WHERE` clauses). This provides a database-level guarantee of one-active-membership-per-user, even across multiple horizontally-scaled instances.
 
 ---
 
@@ -178,17 +194,17 @@ id | userId | action | previousState | newState | remarks | timestamp
 ```
 
 **Why:** Every state change (SUBSCRIBED, UPGRADED, DOWNGRADED, CANCELLED, TIER_AUTO_UPGRADED) is immutably logged. This serves:
-- **Debugging** — *"Why is this user on PLATINUM?"*
-- **Compliance** — full history of billing-related changes
-- **Analytics** — how many users upgrade within 30 days of subscribing?
+- **Debugging** â€” *"Why is this user on PLATINUM?"*
+- **Compliance** â€” full history of billing-related changes
+- **Analytics** â€” how many users upgrade within 30 days of subscribing?
 
-**Decision:** This entity has no setters and no `@PreUpdate` — it is **append-only**. Once a log entry is created, it is never modified.
+**Decision:** This entity has no setters and no `@PreUpdate` â€” it is **append-only**. Once a log entry is created, it is never modified.
 
 ---
 
-## 🧩 Design Patterns Used
+## ðŸ§© Design Patterns Used
 
-### 1. Strategy Pattern — Tier Criteria Evaluation
+### 1. Strategy Pattern â€” Tier Criteria Evaluation
 
 **Problem:** We have 3 types of criteria (ORDER_COUNT, ORDER_VALUE, COHORT), each with different evaluation logic. Adding a 4th type (e.g., REFERRAL_COUNT) should not require changing existing code.
 
@@ -196,9 +212,9 @@ id | userId | action | previousState | newState | remarks | timestamp
 
 ```
 TierCriteriaStrategy (interface)
-    ├── OrderCountCriteriaStrategy  → handles ORDER_COUNT
-    ├── OrderValueCriteriaStrategy  → handles ORDER_VALUE
-    └── CohortCriteriaStrategy      → handles COHORT
+    â”œâ”€â”€ OrderCountCriteriaStrategy  â†’ handles ORDER_COUNT
+    â”œâ”€â”€ OrderValueCriteriaStrategy  â†’ handles ORDER_VALUE
+    â””â”€â”€ CohortCriteriaStrategy      â†’ handles COHORT
 ```
 
 **Interface Contract:**
@@ -209,11 +225,9 @@ public interface TierCriteriaStrategy {
 }
 ```
 
-**Why:** Open/Closed Principle — open for extension (new strategy), closed for modification (no changes to `TierEvaluationService`).
+**Why:** Open/Closed Principle â€” open for extension (new strategy), closed for modification (no changes to `TierEvaluationService`).
 
----
-
-### 2. Factory Pattern — Strategy Resolution
+### 2. Factory Pattern â€” Strategy Resolution
 
 **Problem:** Given a `CriteriaType` from the database, how do we get the right strategy at runtime without a giant `if-else` or `switch` block?
 
@@ -228,24 +242,20 @@ public TierCriteriaStrategyFactory(List<TierCriteriaStrategy> strategies) {
 
 **Why:** Zero-configuration factory. Adding a new strategy = just create a new `@Component` class. The factory picks it up automatically on startup.
 
----
-
 ### 3. Repository Pattern
 
 **Problem:** Business logic should not be coupled to database queries.
 
-**Solution:** Spring Data JPA repositories abstract all data access. The service layer only calls repository methods — it has no SQL or JPQL awareness.
+**Solution:** Spring Data JPA repositories abstract all data access. The service layer only calls repository methods â€” it has no SQL or JPQL awareness.
 
-**Special addition — Pessimistic Locking in Repository:**
+**Special addition â€” Pessimistic Locking in Repository:**
 ```java
 @Lock(LockModeType.PESSIMISTIC_WRITE)
 @Query("SELECT um FROM UserMembership um WHERE um.userId = :userId AND um.status = :status")
 Optional<UserMembership> findByUserIdAndStatusWithLock(...);
 ```
 
-**Why:** The repository is the right place to declare locking strategy — not the service layer. This keeps the service clean and makes the locking behavior explicitly visible at the data access layer.
-
----
+**Why:** The repository is the right place to declare locking strategy â€” not the service layer. This keeps the service clean and makes the locking behavior explicitly visible at the data access layer.
 
 ### 4. Builder Pattern (via Lombok)
 
@@ -253,8 +263,6 @@ All entities and DTOs use `@Builder`. This gives:
 - Immutable-style construction with named parameters
 - No telescoping constructors
 - Easy to read at call sites: `UserMembership.builder().userId("u1").plan(plan).build()`
-
----
 
 ### 5. Template Method (ApiResponse Wrapper)
 
@@ -268,227 +276,80 @@ ApiResponse<T> {
 }
 ```
 
-**Why:** Consistent response envelope across all endpoints. The client always knows where to find data, error messages, and timestamp — regardless of which endpoint they call.
+**Why:** Consistent response envelope across all endpoints. The client always knows where to find data, error messages, and timestamp â€” regardless of which endpoint they call.
 
 ---
 
-## 🔒 Concurrency Handling
+## ðŸ”’ Concurrency Handling
 
 Two layers of concurrency protection are used, each solving a different problem.
-
----
 
 ### Layer 1: Pessimistic Locking (DB-level)
 **Where:** `UserMembershipRepository.findByUserIdAndStatusWithLock()`
 
-**When used:** Subscribe, upgrade, downgrade, cancel, evaluate-tier — any **write** operation.
+**When used:** Subscribe, upgrade, downgrade, cancel, evaluate-tier â€” any **write** operation.
 
 **How it works:**
 ```sql
 SELECT * FROM user_memberships
 WHERE user_id = 'user1' AND status = 'ACTIVE'
-FOR UPDATE;  ← DB row is locked until transaction commits
+FOR UPDATE;  â†  DB row is locked until transaction commits
 ```
 
 **Why:** Prevents two simultaneous requests (e.g., two upgrade calls) from both reading the same membership state and both writing conflicting updates. The second request waits until the first transaction completes.
 
-**Scenario prevented:**
-```
-Thread A: reads user1 membership (SILVER) → begins upgrade to GOLD
-Thread B: reads user1 membership (SILVER) → begins upgrade to PLATINUM
-Thread A: saves GOLD ✅
-Thread B: saves PLATINUM ✅ ← without lock, both succeed, last write wins (data corruption)
-With lock: Thread B waits → reads updated state (GOLD) → upgrade to PLATINUM succeeds correctly
-```
-
----
-
 ### Layer 2: Optimistic Locking (@Version)
 **Where:** `UserMembership` entity has a `@Version Long version` field.
-
-**When it helps:** If two threads bypass the pessimistic lock (different entry points), Hibernate's optimistic lock acts as the last line of defense.
 
 **How it works:**
 ```sql
 UPDATE user_memberships
-SET tier_id = 2, version = 2     ← Hibernate increments version
-WHERE id = 1 AND version = 1;    ← Only succeeds if version hasn't changed
+SET tier_id = 2, version = 2     â†  Hibernate increments version
+WHERE id = 1 AND version = 1;    â†  Only succeeds if version hasn't changed
 ```
 
-If `version` was already updated by another thread, the `WHERE version=1` matches 0 rows → Hibernate throws `OptimisticLockException` → caught by `GlobalExceptionHandler` → returns HTTP 409 Conflict with *"Please retry your request"*.
+If `version` was already updated by another thread, Hibernate throws `OptimisticLockException`.
 
----
+### Layer 3: Distributed-Safe Duplicate Subscribe Guard
 
-### Layer 3: Duplicate Subscribe Guard
+**Problem:** `SELECT ... FOR UPDATE` (pessimistic lock) only locks **existing rows**. If no membership exists yet (first-time subscriber), there is nothing to lock — two concurrent requests (even across different instances) can both see "no existing membership" and both INSERT, creating duplicates.
+
+**Solution — Shadow Table (`ActiveUserMembership`) + Partial Unique Index:**
 ```java
+// Step 1: Application-level check (with pessimistic lock if row exists)
 membershipRepository.findByUserIdAndStatusWithLock(userId, MembershipStatus.ACTIVE)
     .ifPresent(existing -> {
         throw new MembershipException("User already has an active membership.");
     });
+
+// Step 2: Shadow table insert (PK constraint prevents duplicates across instances)
+activeUserMembershipRepository.save(new ActiveUserMembership(userId, membership.getId()));
+// → Second concurrent INSERT throws DataIntegrityViolationException → HTTP 409 Conflict
+
+// On Cancel/Expire:
+activeUserMembershipRepository.deleteByUserId(userId);
 ```
 
-**Why:** Even before creating a new membership, we check (with a lock) whether one already exists. This prevents race conditions where two simultaneous subscribe calls both pass the check and create duplicate memberships.
+### Layer 4: Distributed Scheduler Lock (ShedLock)
 
----
+**Problem:** `@Scheduled` fires on **every** running instance simultaneously. 
 
-## 🖥️ Multi-Instance / Distributed System Fixes
-
-Running multiple instances of this service (horizontal scaling) introduces 4 problems that the single-instance implementation does not handle. All 4 are fixed.
-
----
-
-### Problem 1 — Race Condition on Subscribe (Most Critical) ❌ → ✅ Fixed
-
-**Root Cause:** `SELECT ... FOR UPDATE` (pessimistic lock) only locks **existing rows**. If no membership row exists yet, there is nothing to lock, and two concurrent instances can both INSERT simultaneously.
-
-```
-Instance 1: SELECT ... FOR UPDATE WHERE userId='user1' → empty (nothing to lock)
-Instance 2: SELECT ... FOR UPDATE WHERE userId='user1' → empty (nothing to lock)
-Instance 1: INSERT new membership ✅
-Instance 2: INSERT new membership ✅  ← user1 now has 2 ACTIVE memberships ❌
-```
-
-**Fix — Shadow Table / Constraint (`ActiveUserMembership.java`):**
-Because some databases (like H2 used in our demo) do not support partial unique indexes, we enforce this with an `active_user_memberships` shadow table.
-
+**Solution — ShedLock with JDBC provider:**
 ```java
-@Entity
-@Table(name = "active_user_memberships")
-public class ActiveUserMembership {
-    @Id
-    @Column(name = "user_id")
-    private String userId;   // Primary Key enforces uniqueness
-    
-    private Long membershipId;
-}
-```
-
-**Flow:**
-1. On Subscribe → `INSERT INTO active_user_memberships (user1)`. Second concurrent instance throws `DataIntegrityViolationException` (caught and mapped to 409 Conflict).
-2. On Cancel/Expire → `DELETE FROM active_user_memberships WHERE user_id = 'user1'`.
-
----
-
-### Problem 2 — Scheduler Runs on Every Instance ❌ → ✅ Fixed
-
-**Root Cause:** `@Scheduled` fires on **every** running instance simultaneously. With 3 instances and 100 expired memberships — each membership is processed 3 times.
-
-```
-Instance 1 @Scheduled → finds 100 expired → processes all 100
-Instance 2 @Scheduled → finds 100 expired (same!) → processes all 100 again
-Instance 3 @Scheduled → finds 100 expired (same!) → processes all 100 again
-```
-
-**Fix — ShedLock for distributed scheduling in `ShedLockConfig.java`:**
-```java
-@Configuration
-@EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
-public class ShedLockConfig {
-    @Bean
-    public LockProvider lockProvider(DataSource dataSource) {
-        return new JdbcTemplateLockProvider(
-            JdbcTemplateLockProvider.Configuration.builder()
-                .withJdbcTemplate(new JdbcTemplate(dataSource))
-                .usingDbTime()  // use DB clock — avoids clock-skew between servers
-                .build()
-        );
-    }
-}
-```
-
-```java
-// MembershipServiceImpl.java
 @Scheduled(cron = "0 0 0 * * ?")
 @SchedulerLock(
     name           = "processExpiredMemberships",
-    lockAtLeastFor = "PT1M",   // hold lock ≥ 1 min (prevents rapid re-trigger)
-    lockAtMostFor  = "PT10M"   // force-release after 10 min even if instance crashes
+    lockAtLeastFor = "PT1M",
+    lockAtMostFor  = "PT10M"
 )
 public void processExpiredMemberships() { ... }
 ```
 
-**How ShedLock works:**
-```
-All 3 instances try to INSERT INTO shedlock(name='processExpiredMemberships')
-  └─ Only 1 succeeds (PK constraint on `name`)
-  └─ That instance runs the job
-  └─ Other 2 get duplicate key → skip silently
-  └─ Lock released after job completes (or lockAtMostFor)
-```
+ShedLock uses a `shedlock` database table with a primary key constraint on the lock name. All instances attempt to INSERT simultaneously — only one succeeds, that instance runs the job, the others skip.
 
 ---
 
-### Problem 3 — Low-Cardinality Index on `status` ❌ → ✅ Fixed
-
-**Root Cause:** A standalone index on `status` (4 possible values: ACTIVE/CANCELLED/EXPIRED/PENDING) is nearly useless. The query optimizer often ignores it and does a full table scan because ~25% of rows match any given status.
-
-```java
-// Old — problematic
-@Index(name = "idx_user_membership_userId", columnList = "userId")
-@Index(name = "idx_user_membership_status", columnList = "status") // ← optimizer ignores this
-```
-
-**Fix — Composite indexes in `UserMembership.java`:**
-```java
-// New — correct
-@Index(name = "idx_user_status_composite", columnList = "userId, status")
-// Covers: WHERE user_id = ? AND status = 'ACTIVE' in ONE index scan
-
-@Index(name = "idx_status_endDate", columnList = "status, endDate")
-// Covers: WHERE status = 'ACTIVE' AND end_date < today (scheduler query)
-```
-
-| Query | Old (separate indexes) | New (composite index) |
-|-------|----------------------|----------------------|
-| `WHERE userId=? AND status='ACTIVE'` | 2-step: userId index → filter status | Single scan on composite index |
-| `WHERE status='ACTIVE' AND endDate < today` | Status index ignored → full scan | Single scan on (status, endDate) |
-
----
-
-### Problem 4 — Partial Unique Index Cannot Be Expressed via `@Index` ❌ → ✅ Fixed
-
-**Root Cause:** JPA's `@Index` annotation has no `where` clause support, so the partial unique index that enforces one-active-membership-per-user had to be created separately.
-
-**Fix — `data.sql` runs after Hibernate DDL:**
-
-```yaml
-# application.yml
-spring:
-  sql:
-    init:
-      mode: always  # enables data.sql execution after Hibernate creates tables
-```
-
-```sql
--- data.sql (executes AFTER Hibernate creates user_memberships table)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_one_active_per_user
-    ON user_memberships(user_id)
-    WHERE status = 'ACTIVE';
-
-CREATE TABLE IF NOT EXISTS shedlock (  -- ShedLock distributed lock table
-    name       VARCHAR(64)  NOT NULL,
-    lock_until TIMESTAMP    NOT NULL,
-    locked_at  TIMESTAMP    NOT NULL,
-    locked_by  VARCHAR(255) NOT NULL,
-    PRIMARY KEY (name)
-);
-```
-
----
-
-### Summary of All Fixes
-
-| Problem | Root Cause | Fix | File |
-|---------|-----------|-----|------|
-| Duplicate ACTIVE memberships across instances | Pessimistic lock can't lock non-existent rows | Partial unique index `WHERE status='ACTIVE'` | `data.sql` |
-| Scheduler runs N times on N instances | `@Scheduled` fires on every JVM | ShedLock `@SchedulerLock` with JDBC provider | `ShedLockConfig.java` |
-| Low-cardinality `status` index ignored | 4 distinct values → optimizer skips | Composite indexes `(userId, status)` and `(status, endDate)` | `UserMembership.java` |
-| Partial index not expressible in JPA | `@Index` has no WHERE clause | `data.sql` runs after Hibernate DDL | `data.sql` + `application.yml` |
-
----
-
-## 📡 API Reference
-
+## ðŸ“¡ API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -501,39 +362,35 @@ CREATE TABLE IF NOT EXISTS shedlock (  -- ShedLock distributed lock table
 | `POST` | `/api/v1/membership/evaluate-tier` | Auto-evaluate tier based on order data |
 | `GET` | `/api/v1/membership/history/{userId}` | Get full audit trail |
 
-**Swagger UI:** `http://localhost:8080/swagger-ui.html`
-**H2 Console:** `http://localhost:8080/h2-console`
-
 ---
 
-## 🔄 Request Flow — End to End
+## ðŸ”„ Request Flow â€” End to End
 
 ### Flow 1: GET /api/v1/membership/plans
 
 ```
 Client
-  │
-  │ GET /api/v1/membership/plans
-  ▼
+  â”‚
+  â”‚ GET /api/v1/membership/plans
+  â–¼
 MembershipController.getPlansAndTiers()
-  │
-  │ No auth/lock needed — read-only
-  ▼
+  â”‚
+  â”‚ No auth/lock needed â€” read-only
+  â–¼
 MembershipServiceImpl.getPlansAndTiers()
-  │
-  ├─ planRepository.findByActiveTrue()
-  │    └─ SELECT * FROM membership_plans WHERE active = true
-  │
-  ├─ tierRepository.findByActiveTrueOrderByTierOrderAsc()
-  │    └─ SELECT * FROM membership_tiers WHERE active = true ORDER BY tier_order ASC
-  │    └─ For each tier → lazily loads tier_benefits + tier_criteria
-  │
-  ├─ Maps each plan → PlanResponse (DTO)
-  ├─ Maps each tier → TierResponse (DTO)
-  │    └─ benefits → Map<BenefitType, String>
-  │    └─ criteria → List<CriteriaResponse>
-  │
-  └─ Returns PlansAndTiersResponse wrapped in ApiResponse<T>
+  â”‚
+  â”œâ”€ planRepository.findByActiveTrue()
+  â”‚    â””â”€ SELECT * FROM membership_plans WHERE active = true
+  â”‚
+  â”œâ”€ tierRepository.findByActiveTrueOrderByTierOrderAsc()
+  â”‚    â””â”€ For each tier â†’ lazily loads tier_benefits + tier_criteria
+  â”‚
+  â”œâ”€ Maps each plan â†’ PlanResponse (DTO)
+  â”œâ”€ Maps each tier â†’ TierResponse (DTO)
+  â”‚    â””â”€ benefits â†’ Map<BenefitType, String>
+  â”‚    â””â”€ criteria â†’ List<CriteriaResponse>
+  â”‚
+  â””â”€ Returns PlansAndTiersResponse wrapped in ApiResponse<T>
 
 Response: HTTP 200 with plans[] + tiers[] + benefits + criteria
 ```
@@ -544,39 +401,27 @@ Response: HTTP 200 with plans[] + tiers[] + benefits + criteria
 
 ```
 Client
-  │
-  │ POST /subscribe { userId, planType, tierLevel? }
-  ▼
+  â”‚
+  â”‚ POST /subscribe { userId, planType, tierLevel? }
+  â–¼
 MembershipController.subscribe()
-  │
-  │ @Valid validates: userId not blank, planType not null
-  ▼
+  â”‚
+  â”‚ @Valid validates: userId not blank, planType not null
+  â–¼
 MembershipServiceImpl.subscribe()
-  │
-  ├─ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
-  │    └─ SELECT ... FOR UPDATE
-  │    └─ If found → throw MembershipException(409) "Already has active membership"
-  │
-  ├─ planRepository.findByPlanTypeAndActiveTrue(planType)
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ tierRepository.findByTierLevel(tierLevel)  [or findLowestActiveTier() if null]
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ Build UserMembership:
-  │    startDate = today
-  │    endDate   = today + plan.durationDays
-  │    status    = ACTIVE
-  │    autoRenew = true
-  │    version   = 0  (first version)
-  │
-  ├─ membershipRepository.save(membership)
-  │    └─ INSERT INTO user_memberships (...)
-  │
-  ├─ auditLogRepository.save(log)
-  │    └─ INSERT INTO membership_audit_logs (action=SUBSCRIBED, ...)
-  │
-  └─ Returns UserMembershipResponse (plan + tier + benefits + dates)
+  â”‚
+  â”œâ”€ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
+  â”‚    â””â”€ SELECT ... FOR UPDATE
+  â”‚    â””â”€ If found â†’ throw MembershipException(409)
+  â”‚
+  â”œâ”€ activeUserMembershipRepository.save(userId)
+  â”‚    â””â”€ PK constraint prevents duplicate ACTIVE across instances
+  â”‚
+  â”œâ”€ Build UserMembership (startDate=today, endDate=today+plan.durationDays, status=ACTIVE)
+  â”œâ”€ membershipRepository.save(membership)
+  â”œâ”€ auditLogRepository.save(log) action=SUBSCRIBED
+  â”‚
+  â””â”€ Returns UserMembershipResponse (plan + tier + benefits + dates)
 
 Response: HTTP 201 Created
 ```
@@ -587,40 +432,21 @@ Response: HTTP 201 Created
 
 ```
 Client
-  │
-  │ PUT /upgrade { userId, targetTier, reason }
-  ▼
-MembershipController.upgradeTier()
-  │
-  │ @Valid validates: userId not blank, targetTier not null
-  ▼
+  â”‚
+  â”‚ PUT /upgrade { userId, targetTier, reason }
+  â–¼
 MembershipServiceImpl.upgradeTier()
-  │
-  ├─ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
-  │    └─ SELECT ... FOR UPDATE
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ tierRepository.findByTierLevel(targetTier)
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ Validation: targetTier.isHigherThan(currentTier)?
-  │    └─ Uses tierOrder: GOLD(2) > SILVER(1) → valid
-  │    └─ If not higher → throw MembershipException(400) "Cannot upgrade"
-  │
-  ├─ membership.setTier(targetTier)
-  │    └─ startDate, endDate UNCHANGED (period is preserved)
-  │    └─ version auto-incremented by Hibernate
-  │
-  ├─ membershipRepository.save(membership)
-  │    └─ UPDATE user_memberships SET tier_id=?, version=? WHERE id=? AND version=?
-  │
-  ├─ auditLogRepository.save(log)
-  │    └─ action=UPGRADED, previousState="tier=SILVER", newState="tier=GOLD"
-  │
-  └─ Returns updated UserMembershipResponse
+  â”‚
+  â”œâ”€ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
+  â”œâ”€ Validation: targetTier.isHigherThan(currentTier) using tierOrder
+  â”œâ”€ membership.setTier(targetTier) (startDate/endDate UNCHANGED)
+  â”œâ”€ membershipRepository.save(membership)
+  â”œâ”€ auditLogRepository.save(log) action=UPGRADED
+  â”‚
+  â””â”€ Returns updated UserMembershipResponse
 
-Response: HTTP 200 OK with new tier benefits
-Note: Billing period (startDate/endDate) is NOT reset — user keeps remaining days
+Response: HTTP 200 OK
+Note: Billing period (startDate/endDate) is NOT reset
 ```
 
 ---
@@ -629,57 +455,27 @@ Note: Billing period (startDate/endDate) is NOT reset — user keeps remaining d
 
 ```
 Client (triggered by Order Service after each order)
-  │
-  │ POST /evaluate-tier { userId, orderCount, totalOrderValue, userCohort }
-  ▼
+  â”‚
+  â”‚ POST /evaluate-tier { userId, orderCount, totalOrderValue, userCohort }
+  â–¼
 MembershipController.evaluateTier()
-  ▼
+  â–¼
 MembershipServiceImpl.evaluateAndUpdateTier()
-  │
-  ├─ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ Build TierEvaluationContext:
-  │    { userId, orderCount=7, totalOrderValue=6000, userCohort="STANDARD" }
-  │
-  ├─ TierEvaluationService.evaluateBestTier(context)
-  │    │
-  │    ├─ Load all active tiers ordered DESCENDING by tierOrder
-  │    │    [PLATINUM(3), GOLD(2), SILVER(1)]
-  │    │
-  │    ├─ For PLATINUM (tierOrder=3):
-  │    │    Load criteria: [ORDER_COUNT>=20, ORDER_VALUE>=20000, COHORT=PREMIUM]
-  │    │    │
-  │    │    ├─ strategyFactory.resolve(ORDER_COUNT) → OrderCountCriteriaStrategy
-  │    │    │    evaluate: 7 >= 20 → FALSE ❌
-  │    │    ├─ strategyFactory.resolve(ORDER_VALUE) → OrderValueCriteriaStrategy
-  │    │    │    evaluate: 6000 >= 20000 → FALSE ❌
-  │    │    └─ strategyFactory.resolve(COHORT) → CohortCriteriaStrategy
-  │    │         evaluate: "STANDARD" == "PREMIUM" → FALSE ❌
-  │    │    Result: PLATINUM not qualified ❌
-  │    │
-  │    ├─ For GOLD (tierOrder=2):
-  │    │    Load criteria: [ORDER_COUNT>=5, ORDER_VALUE>=5000]
-  │    │    │
-  │    │    ├─ strategyFactory.resolve(ORDER_COUNT) → OrderCountCriteriaStrategy
-  │    │    │    evaluate: 7 >= 5 → TRUE ✅  ← OR logic stops here
-  │    │    Result: GOLD qualified ✅
-  │    │
-  │    └─ Returns GOLD tier
-  │
-  ├─ Compare: bestTier(GOLD) vs currentTier(SILVER)?
-  │    → Different → update!
-  │
-  ├─ membership.setTier(GOLD)
-  ├─ membershipRepository.save(membership)
-  │    └─ UPDATE user_memberships SET tier_id=2, version=? ...
-  │
-  ├─ auditLogRepository.save(log)
-  │    └─ action=TIER_AUTO_UPGRADED, previousState="tier=SILVER", newState="tier=GOLD..."
-  │
-  └─ Returns updated UserMembershipResponse
-
-Response: HTTP 200 OK with new tier
+  â”‚
+  â”œâ”€ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
+  â”‚    â””â”€ If not found â†’ throw ResourceNotFoundException(404)
+  â”‚
+  â”œâ”€ Build TierEvaluationContext...
+  â”‚
+  â”œâ”€ TierEvaluationService.evaluateBestTier(context)
+  â”‚    â”œâ”€ For GOLD (tierOrder=2):
+  â”‚    â”‚    evaluate: 7 >= 5 â†’ TRUE âœ…
+  â”‚
+  â”œâ”€ membership.setTier(GOLD)
+  â”œâ”€ membershipRepository.save(membership)
+  â”‚    â””â”€ UPDATE user_memberships SET tier_id=2, version=? ...
+  â”‚
+  â”œâ”€ auditLogRepository.save(log)
 ```
 
 ---
@@ -688,29 +484,20 @@ Response: HTTP 200 OK with new tier
 
 ```
 Client
-  │
-  │ PUT /cancel/user1
-  ▼
-MembershipController.cancelMembership()
-  ▼
+  â”‚
+  â”‚ PUT /cancel/user1
+  â–¼
 MembershipServiceImpl.cancelMembership()
-  │
-  ├─ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
-  │    └─ If not found → throw ResourceNotFoundException(404)
-  │
-  ├─ membership.setStatus(CANCELLED)
-  │    └─ plan, tier, startDate, endDate unchanged
-  │
-  ├─ membershipRepository.save(membership)
-  │    └─ UPDATE user_memberships SET status='CANCELLED', version=? ...
-  │
-  ├─ auditLogRepository.save(log)
-  │    └─ action=CANCELLED
-  │
-  └─ Returns membership with status=CANCELLED
+  â”‚
+  â”œâ”€ [LOCK] findByUserIdAndStatusWithLock(userId, ACTIVE)
+  â”œâ”€ membership.setStatus(CANCELLED)
+  â”œâ”€ activeUserMembershipRepository.deleteByUserId(userId)
+  â”œâ”€ membershipRepository.save(membership)
+  â”œâ”€ auditLogRepository.save(log) action=CANCELLED
+  â”‚
+  â””â”€ Returns membership with status=CANCELLED
 
 Response: HTTP 200 OK
-Note: In production, this would also trigger a refund calculation if cancelling mid-period.
 ```
 
 ---
@@ -719,25 +506,25 @@ Note: In production, this would also trigger a refund calculation if cancelling 
 
 ```
 Spring Scheduler (cron: 0 0 0 * * ?)
-  │
-  ├─ membershipRepository.findExpiredSubscriptions(LocalDate.now())
-  │    └─ SELECT * FROM user_memberships WHERE status='ACTIVE' AND end_date < today
-  │
-  ├─ For each expired membership:
-  │    ├─ membership.setStatus(EXPIRED)
-  │    ├─ membershipRepository.save(membership)
-  │    └─ auditLogRepository.save(log) action=EXPIRED
-  │
-  └─ [Production extension]:
+  â”‚
+  â”œâ”€ membershipRepository.findExpiredSubscriptions(LocalDate.now())
+  â”‚    â””â”€ SELECT * FROM user_memberships WHERE status='ACTIVE' AND end_date < today
+  â”‚
+  â”œâ”€ For each expired membership:
+  â”‚    â”œâ”€ membership.setStatus(EXPIRED)
+  â”‚    â”œâ”€ membershipRepository.save(membership)
+  â”‚    â””â”€ auditLogRepository.save(log) action=EXPIRED
+  â”‚
+  â””â”€ [Production extension]:
        If autoRenew=true:
-         → Call PaymentService.charge(userId, plan.price)
-         → On success: extend endDate + status=ACTIVE
-         → On failure: status=EXPIRED + notify user
+         â†’ Call PaymentService.charge(userId, plan.price)
+         â†’ On success: extend endDate + status=ACTIVE
+         â†’ On failure: status=EXPIRED + notify user
 ```
 
 ---
 
-## 🔌 Extensibility Guide
+## ðŸ”Œ Extensibility Guide
 
 ### Adding a New Criteria Type (e.g., REFERRAL_COUNT)
 
@@ -745,7 +532,7 @@ Spring Scheduler (cron: 0 0 0 * * ?)
 ```java
 public enum CriteriaType {
     ORDER_COUNT, ORDER_VALUE, COHORT,
-    REFERRAL_COUNT  // ← add this
+    REFERRAL_COUNT  // â†  add this
 }
 ```
 
@@ -815,7 +602,7 @@ INSERT INTO tier_criteria (criteria_type, threshold, tier_id) VALUES ...
 
 ---
 
-## 🚀 Running the Project
+## ðŸš€ Running the Project
 
 ### Prerequisites
 - Java 17+
@@ -840,7 +627,7 @@ java -jar target/membership-1.0.0.jar
 
 ---
 
-## 🎬 Demo Walkthrough
+## ðŸŽ¬ Demo Walkthrough
 
 ```bash
 # 1. View all plans and tiers
@@ -854,17 +641,17 @@ POST http://localhost:8080/api/v1/membership/subscribe
 PUT http://localhost:8080/api/v1/membership/upgrade
 { "userId": "user1", "targetTier": "GOLD", "reason": "Promo upgrade" }
 
-# 4. Simulate order activity → auto-evaluate tier
+# 4. Simulate order activity â†’ auto-evaluate tier
 POST http://localhost:8080/api/v1/membership/evaluate-tier
 { "userId": "user1", "orderCount": 25, "totalOrderValue": 25000, "userCohort": "STANDARD" }
-# → Auto-promoted to PLATINUM (orderCount 25 >= 20)
+# â†’ Auto-promoted to PLATINUM (orderCount 25 >= 20)
 
 # 5. Check current status
 GET http://localhost:8080/api/v1/membership/status/user1
 
 # 6. View full audit history
 GET http://localhost:8080/api/v1/membership/history/user1
-# → [SUBSCRIBED → UPGRADED → TIER_AUTO_UPGRADED]
+# â†’ [SUBSCRIBED â†’ UPGRADED â†’ TIER_AUTO_UPGRADED]
 
 # 7. Cancel membership
 PUT http://localhost:8080/api/v1/membership/cancel/user1
@@ -872,32 +659,36 @@ PUT http://localhost:8080/api/v1/membership/cancel/user1
 
 ---
 
-## 📌 Key Design Decisions Summary
+## ðŸ“Œ Key Design Decisions Summary
 
 | Decision | Why |
 |----------|-----|
 | Benefits stored in DB, not code | Product team can change discounts without engineering deployment |
 | Criteria stored in DB, not code | Thresholds can be adjusted without code change |
-| OR semantics for tier criteria | More forgiving — high spenders qualify even with few orders |
+| OR semantics for tier criteria | More forgiving â€” high spenders qualify even with few orders |
 | Pessimistic lock on all writes | Prevents concurrent duplicate subscriptions and conflicting tier changes |
 | Optimistic lock (`@Version`) | Last-resort defense against concurrent updates via different code paths |
-| `userId` as String (not FK) | Keeps Membership Service decoupled from User Service — true microservice |
-| `startDate`/`endDate` not reset on tier change | Tier is just a benefit level — it should not affect the billing period |
+| Shadow table (`ActiveUserMembership`) | PK constraint prevents duplicate ACTIVE memberships even across instances |
+| Partial unique index via `data.sql` | Database-level guarantee of one-active-per-user; JPA `@Index` lacks WHERE support |
+| Composite indexes over standalone | `(userId, status)` and `(status, endDate)` prevent full-table scans on low-cardinality columns |
+| ShedLock for `@Scheduled` jobs | Ensures scheduled tasks run on exactly one instance in a multi-node deployment |
+| `userId` as String (not FK) | Keeps Membership Service decoupled from User Service â€” true microservice |
+| `startDate`/`endDate` not reset on tier change | Tier is just a benefit level â€” it should not affect the billing period |
 | Strategy + Factory pattern | Adding new criteria type requires zero changes to existing classes |
-| Audit log as append-only entity | Immutable history — cannot be tampered with after the fact |
-| `@Scheduled` expiry processor | Passive expiry check — avoids relying on clients to detect expiry |
+| Audit log as append-only entity | Immutable history â€” cannot be tampered with after the fact |
+| `@Scheduled` expiry processor | Passive expiry check â€” avoids relying on clients to detect expiry |
 
 ---
 
-## 🔮 Production Considerations (Not Yet Implemented)
+## ðŸ”® Production Considerations (Not Yet Implemented)
 
 | Feature | Notes |
 |---------|-------|
-| **Payment Integration** | Integrate Razorpay/Stripe — charge on subscribe, auto-renew, plan upgrade |
+| **Payment Integration** | Integrate Razorpay/Stripe â€” charge on subscribe, auto-renew, plan upgrade |
 | **Plan Upgrade API** | `PUT /upgrade-plan` with proration calculation |
 | **Database** | Replace H2 with PostgreSQL/MySQL for production |
 | **Migration** | Use Flyway or Liquibase instead of `ddl-auto: create-drop` |
-| **Auth** | Add Spring Security + JWT — verify `userId` from token, not request body |
+| **Auth** | Add Spring Security + JWT â€” verify `userId` from token, not request body |
 | **Kafka Events** | Publish `membership.subscribed`, `membership.tier_changed` events for downstream services |
 | **Caching** | Cache `getPlansAndTiers()` response with Redis (changes rarely) |
 | **Rate Limiting** | Prevent abuse on subscribe endpoint |
@@ -905,4 +696,4 @@ PUT http://localhost:8080/api/v1/membership/cancel/user1
 
 ---
 
-*Built for FirstClub — Assignment submission for Membership Program Backend System*
+*Built for FirstClub â€” Assignment submission for Membership Program Backend System*
