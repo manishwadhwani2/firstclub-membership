@@ -713,6 +713,4 @@ PUT http://localhost:8080/api/v1/membership/cancel/user1
 | Audit log as append-only entity | Immutable history — cannot be tampered with after the fact |
 | `@Scheduled` expiry processor | Passive expiry check — avoids relying on clients to detect expiry |
 
----
 
-*Built for FirstClub — Assignment submission for Membership Program Backend System*
